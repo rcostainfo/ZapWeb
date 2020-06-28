@@ -18,6 +18,10 @@ namespace ZapWeb.Controllers
             _logger = logger;
         }
 
+        public ActionResult Index()
+        {
+            return RedirectToAction(nameof(Login));
+        }
         public ActionResult Login()
         {
             return View();

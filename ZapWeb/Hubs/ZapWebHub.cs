@@ -32,5 +32,19 @@ namespace ZapWeb.Hubs
                 await Clients.Caller.SendAsync("ReceberCadastro", true, usuario, "Usuário cadastrado com sucesso!");
             }
         }
+
+        public async Task Login(Usuario usuario)
+        {
+            var usuarioDB = _banco.Usuarios.FirstOrDefault(a => a.Email == usuario.Email && a.Senha == usuario.Senha);
+
+            if(usuarioDB == null)
+            {
+                await Clients.Caller.SendAsync("ReceberLogin", false, null, "E-mail ou senha inválido!");
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("ReceberLogin", true, usuarioDB, null);
+            }
+        }
     }
 }
