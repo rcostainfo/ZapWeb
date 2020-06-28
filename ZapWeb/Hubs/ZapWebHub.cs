@@ -45,7 +45,24 @@ namespace ZapWeb.Hubs
             else
             {
                 await Clients.Caller.SendAsync("ReceberLogin", true, usuarioDB, null);
+                usuarioDB.IsOnline = true;
+                _banco.Usuarios.Update(usuarioDB);
+                _banco.SaveChanges();
+
+                await Clients.All.SendAsync("ReceberListaUsuarios", _banco.Usuarios.ToList());
             }
+        }
+        public async Task Logout(Usuario usuario)
+        {
+            var usuarioDB = _banco.Usuarios.Find(usuario.Id);
+            usuarioDB.IsOnline = false;
+
+            _banco.Usuarios.Update(usuarioDB);
+            _banco.SaveChanges();
+
+            await DelConnectionIdDoUsuario(usuarioDB);
+
+            await Clients.All.SendAsync("ReceberListaUsuarios", _banco.Usuarios.ToList());
         }
 
         public async Task AddConnectionIdDoUsuario(Usuario usuario)
@@ -93,6 +110,12 @@ namespace ZapWeb.Hubs
             }
 
             //TODO - Remover ConnectionId dos Grupos de conversa desses usuários.
+        }
+
+        public async Task ObterListaUsuarios()
+        {
+            var usuarios = _banco.Usuarios.ToList();
+            await Clients.Caller.SendAsync("ReceberListaUsuarios", usuarios);
         }
     }
 }

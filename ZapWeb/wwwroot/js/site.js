@@ -91,6 +91,26 @@ function DelUsuarioLogado() {
 }
 
 function HabilitarConversacao() {
+    MonitorarConnectionID();
+    MonitorarListaUsuarios();
+}
+
+function MonitorarListaUsuarios() {
+    connection.invoke("ObterListaUsuarios");
+    connection.on("ReceberListaUsuarios", (usuarios) => {
+        var html = "";
+        for (i = 0; i < usuarios.length; i++) {
+            if (usuarios[i].id != GetUsuarioLogado().id) {
+                html += '<div class="container-user-item"><img src="/imagem/logo.png" style="width: 20%;" /><div>' +
+                    '<span>' + usuarios[i].nome.split(" ")[0] + ' (' + (usuarios[i].isOnline ? "online" : "offline") + ')</span><br />' +
+                    '<span class="email">' + usuarios[i].email + '</span></div></div>';
+            }
+        }
+
+        document.getElementById("users").innerHTML = html;
+    });
+}
+function MonitorarConnectionID() {
     var telaConversacao = document.getElementById("tela-conversacao");
     if (telaConversacao != null) {
         if (GetUsuarioLogado() == null) {
@@ -101,10 +121,13 @@ function HabilitarConversacao() {
 
         var btnSair = document.getElementById("btnSair");
         btnSair.addEventListener("click", () => {
-            connection.invoke("DelConnectionIdDoUsuario", GetUsuarioLogado()).then(() => {
+            connection.invoke("Logout", GetUsuarioLogado()).then(() => {
                 DelUsuarioLogado();
                 window.location.href = "/Home/Login";
             });
         });
+
+
+
     }
 }
