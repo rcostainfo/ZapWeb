@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ZapWeb.Models;
 
 namespace ZapWeb.Database
 {
@@ -13,5 +14,8 @@ namespace ZapWeb.Database
 
         }
 
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Grupo> Grupos { get; set; }
+        public DbSet<Mensagem> Mensagens { get; set; }
     }
 }
