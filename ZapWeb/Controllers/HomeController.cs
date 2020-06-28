@@ -18,20 +18,17 @@ namespace ZapWeb.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public ActionResult Login()
         {
             return View();
         }
-
-        public IActionResult Privacy()
+        public ActionResult Cadastro()
         {
             return View();
         }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public ActionResult Conversacao()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
     }
 }
