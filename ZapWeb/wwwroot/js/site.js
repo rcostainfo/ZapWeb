@@ -108,6 +108,17 @@ function MonitorarListaUsuarios() {
         }
 
         document.getElementById("users").innerHTML = html;
+
+        var container = document.getElementById("users").querySelectorAll(".container-user-item");
+        for (i = 0; i < container.length; i++) {
+            container[i].addEventListener("click", (evt) => {
+                var componente = evt.target || evt.srcElement;
+                var emailUserUm = GetUsuarioLogado().email;
+                var emailUserDois = componente.parentElement.querySelector(".email").innerText;
+
+                connection.invoke("CriarOuAbrirGrupo", emailUserUm, emailUserDois);
+            });
+        }
     });
 }
 function MonitorarConnectionID() {
