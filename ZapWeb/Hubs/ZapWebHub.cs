@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,53 @@ namespace ZapWeb.Hubs
             {
                 await Clients.Caller.SendAsync("ReceberLogin", true, usuarioDB, null);
             }
+        }
+
+        public async Task AddConnectionIdDoUsuario(Usuario usuario)
+        {
+            var currentConnectionId = Context.ConnectionId;
+            List<string> connectionsId;
+
+            Usuario usuarioDB = _banco.Usuarios.Find(usuario.Id);
+            if (usuarioDB.ConnectionId == null) {
+                connectionsId = new List<string>();
+                connectionsId.Add(currentConnectionId);
+            }
+            else {
+                connectionsId = JsonConvert.DeserializeObject<List<string>>(usuarioDB.ConnectionId);
+                if (!connectionsId.Contains(currentConnectionId))
+                {
+                    connectionsId.Add(currentConnectionId);
+                }
+            }
+
+            usuarioDB.ConnectionId = JsonConvert.SerializeObject(connectionsId);
+
+            _banco.Usuarios.Update(usuarioDB);
+            _banco.SaveChanges();
+
+            //TODO - Adicionado aos Grupos de conversa desses usuários.
+        }
+        public async Task DelConnectionIdDoUsuario(Usuario usuario)
+        {
+            Usuario usuarioDB = _banco.Usuarios.Find(usuario.Id);
+            if (usuarioDB.ConnectionId.Length > 0)
+            {
+                var currentConnectionId = Context.ConnectionId;
+
+                List<string> connectionsId = JsonConvert.DeserializeObject<List<string>>(usuarioDB.ConnectionId);
+                if (connectionsId.Contains(currentConnectionId))
+                {
+                    connectionsId.Remove(currentConnectionId);
+                }
+
+                usuarioDB.ConnectionId = JsonConvert.SerializeObject(connectionsId);
+
+                _banco.Usuarios.Update(usuarioDB);
+                _banco.SaveChanges();
+            }
+
+            //TODO - Remover ConnectionId dos Grupos de conversa desses usuários.
         }
     }
 }

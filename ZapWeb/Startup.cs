@@ -34,7 +34,9 @@ namespace ZapWeb
 
             services.AddControllersWithViews();
 
-            services.AddSignalR();
+            services.AddSignalR(cfg=> {
+                cfg.EnableDetailedErrors = true;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

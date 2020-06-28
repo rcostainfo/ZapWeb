@@ -12,6 +12,6 @@ namespace ZapWeb.Models
         public string Email { get; set; }
         public string Senha { get; set; }
         public bool IsOnline { get; set; }
-        public string ConnectionId { get; set; }
+        public string ConnectionId { get; set; }//JSON
     }
 }

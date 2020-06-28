@@ -10,6 +10,7 @@ function ConnectionStart() {
     connection.start().then(() => {
         HabilitarCadastro();
         HabilitarLogin();
+        HabilitarConversacao();
         console.info("Connected!");
     }).catch((err) => {
         console.error(err.toString());
@@ -85,19 +86,25 @@ function GetUsuarioLogado() {
 function SetUsuarioLogado(usuario) {
     sessionStorage.setItem("Logado", JSON.stringify(usuario));
 }
-function DelUsuarioLogado(usuario) {
+function DelUsuarioLogado() {
     sessionStorage.removeItem("Logado");
 }
 
-var telaConversacao = document.getElementById("tela-conversacao");
-if (telaConversacao != null) {
-    if (GetUsuarioLogado() == null) {
-        window.location.href = "/Home/Login";
-    }
+function HabilitarConversacao() {
+    var telaConversacao = document.getElementById("tela-conversacao");
+    if (telaConversacao != null) {
+        if (GetUsuarioLogado() == null) {
+            window.location.href = "/Home/Login";
+        }
 
-    var btnSair = document.getElementById("btnSair");
-    btnSair.addEventListener("click", () => {
-        DelUsuarioLogado();
-        window.location.href = "/Home/Login";
-    });
+        connection.invoke("AddConnectionIdDoUsuario", GetUsuarioLogado());
+
+        var btnSair = document.getElementById("btnSair");
+        btnSair.addEventListener("click", () => {
+            connection.invoke("DelConnectionIdDoUsuario", GetUsuarioLogado()).then(() => {
+                DelUsuarioLogado();
+                window.location.href = "/Home/Login";
+            });
+        });
+    }
 }
