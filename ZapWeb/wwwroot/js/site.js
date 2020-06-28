@@ -50,6 +50,10 @@ function HabilitarCadastro() {
 function HabilitarLogin() {
     var formLogin = document.getElementById("form-login");
     if (formLogin != null) {
+        if (GetUsuarioLogado() != null) {
+            window.location.href = "/Home/Conversacao";
+        }
+
         var btnAcessar = document.getElementById("btnAcessar");
 
         btnAcessar.addEventListener("click", () => {
@@ -80,4 +84,20 @@ function GetUsuarioLogado() {
 }
 function SetUsuarioLogado(usuario) {
     sessionStorage.setItem("Logado", JSON.stringify(usuario));
+}
+function DelUsuarioLogado(usuario) {
+    sessionStorage.removeItem("Logado");
+}
+
+var telaConversacao = document.getElementById("tela-conversacao");
+if (telaConversacao != null) {
+    if (GetUsuarioLogado() == null) {
+        window.location.href = "/Home/Login";
+    }
+
+    var btnSair = document.getElementById("btnSair");
+    btnSair.addEventListener("click", () => {
+        DelUsuarioLogado();
+        window.location.href = "/Home/Login";
+    });
 }
