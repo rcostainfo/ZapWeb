@@ -3,6 +3,9 @@
         body {
             background-color: #F0F0F0;
         }
+        .container-button {
+            display: none;
+        }
     </style>
 }
 
@@ -19,33 +22,10 @@
 
 <!-- Page content -->
 <div class="main" id="tela-conversacao">
-    <div class="container-messages">
-        <div class="message message-left">
-            <div class="message-head">
-                <img src="/imagem/chat.png" />
-                Aline
-            </div>
-            <div class="message-message">
-                Olá José! Como vai?
-            </div>
-
-
-        </div>
-        <div class="message message-right">
-            <div class="message-head">
-                <img src="/imagem/chat.png" />
-                Eu
-            </div>
-            <div class="message-message">
-                Olá José! Como vai?
-            </div>
-        </div>
-
-    </div>
+    <div class="container-messages"></div>
 
     <div class="container-button">
-        <input type="text" placeholder="Mensagem" />
-        <button class="btn-send"></button>
+        <input type="text" placeholder="Mensagem" id="mensagem" />
+        <button class="btn-send" id="btnEnviar"></button>
     </div>
-
 </div>

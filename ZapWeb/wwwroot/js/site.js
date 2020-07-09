@@ -1,6 +1,7 @@
 ﻿/// <reference path="../lib/signalr/dist/browser/signalr.min.js" />
 /* Conexão e Reconexão com o SignalR - Hub */
 var connection = new signalR.HubConnectionBuilder().withUrl("/ZapWebHub").build();
+var nomeGrupo;
 
 connection.onclose(async () => { await ConnectionStart(); });
 
@@ -13,8 +14,10 @@ function ConnectionStart() {
         HabilitarConversacao();
         console.info("Connected!");
     }).catch((err) => {
-        console.error(err.toString());
-        setTimeout(ConnectionStart, 5000);
+        if (connection.state == 0) {
+            console.error(err.toString());
+            setTimeout(ConnectionStart, 5000);
+        }
     });
 }
 function HabilitarCadastro() {
@@ -91,8 +94,62 @@ function DelUsuarioLogado() {
 }
 
 function HabilitarConversacao() {
-    MonitorarConnectionID();
-    MonitorarListaUsuarios();
+    var telaConversacao = document.getElementById("tela-conversacao");
+    if (telaConversacao != null) {
+        MonitorarConnectionID();
+        MonitorarListaUsuarios();
+        EnviarReceberMensagem();
+        AbrirGrupo();
+        OfflineDetect();
+    }
+}
+function OfflineDetect() {
+    window.addEventListener("BeforeUnloadEvent", (event) => {
+        connection.invoke("DelConnectionIdDoUsuario", GetUsuarioLogado());
+        event.returnValue = "Tem certeza que deseja sair?";
+    });
+}
+function AbrirGrupo() {
+    connection.on("AbrirGrupo", (nomeDoGrupo, mensagens) => {
+        nomeGrupo = nomeDoGrupo;
+        console.info(nomeGrupo);
+
+        var container = document.querySelector(".container-messages");
+        connection.innerHTML = "";
+
+        var mensageHTML = "";
+        for (i = 0; i < mensagens.length; i++) {
+            mensageHTML += '<div class="message message-' + (mensagens[i].usuario.id == GetUsuarioLogado().id ? "right" : "left") + '">' +
+                '<div class="message-head"><img src="/imagem/chat.png" /> ' + mensagens[i].usuario.nome + '</div><div class="message-message">' +
+                mensagens[i].texto + '</div></div >';
+        }
+
+        container.innerHTML += mensageHTML;
+
+        document.querySelector(".container-button").style.display = "flex";
+    });
+}
+
+function EnviarReceberMensagem() {
+    var btnEnviar = document.getElementById("btnEnviar");
+    btnEnviar.addEventListener("click", () => {
+        var mensagem = document.getElementById("mensagem").value;
+        var usuario = GetUsuarioLogado();
+
+        connection.invoke("EnviarMensagem", usuario, mensagem, nomeGrupo);
+    });
+
+    connection.on("ReceberMensagem", (mensagem, nomeDoGrupo) => {
+        if (nomeGrupo == nomeDoGrupo) {
+            var container = document.querySelector(".container-messages");
+
+            var mensageHTML = '<div class="message message-' + (mensagem.usuario.id == GetUsuarioLogado().id ? "right" : "left") + '">' +
+                '<div class="message-head"><img src="/imagem/chat.png" />' + mensagem.usuario.nome + '</div><div class="message-message">' +
+                mensagem.texto + '</div></div >';
+
+            container.innerHTML += mensageHTML;
+        }
+    });
 }
 
 function MonitorarListaUsuarios() {
